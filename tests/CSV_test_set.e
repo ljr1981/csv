@@ -70,16 +70,21 @@ feature -- Test routines
 
 			create l_array.make (10)
 			create l_object
-			l_object.put (create {CSV_STRING}.make_from_string ("blah"), "blah")
 			l_array.add (l_object)
-			assert_strings_equal ("array_object_string", array_object_string, l_array.representation)
+			l_object.put (create {CSV_STRING}.make_from_string ("blah1"), "blah1")
+			l_object.put (create {CSV_STRING}.make_from_string ("blah2"), "blah2")
+			assert_strings_equal ("object_string", object_string, l_object.representation)
+			assert_strings_equal ("array_in_object_string", array_in_object_string, l_array.representation)
 
 		end
 
 feature {NONE} -- Support
 
-	array_object_string: STRING = "[
-[]
+	object_string: STRING = "[
+"blah1","blah2"
+]"
+	array_in_object_string: STRING = "[
+["blah1","blah2"]
 ]"
 
 	array_string: STRING = "[

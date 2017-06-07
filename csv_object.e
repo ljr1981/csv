@@ -22,9 +22,23 @@ feature
 		end
 
 	representation: STRING
-		attribute
-			create Result.make_empty
+			-- <Precursor>
+		do
+			create Result.make (2)
+--			Result.append_character ('{')
+			across
+				items as ic
+			loop
+				if Result.count > 1 then
+					Result.append_character (',')
+				end
+--				Result.append (ic.key.representation)
+--				Result.append_character (':')
+				Result.append (ic.item.representation)
+			end
+--			Result.append_character ('}')
 		end
+
 
 	hash_code: INTEGER
 
