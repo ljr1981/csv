@@ -23,6 +23,22 @@ inherit
 
 feature -- Test routines
 
+	csv_object_representation_tests
+		local
+			l_object: CSV_TEST_OBJECT
+		do
+			create l_object
+			assert_strings_equal ("object_one", object_one, l_object.representation_from_current (l_object))
+		end
+
+feature {NONE} -- Support
+
+	object_one: STRING = "[
+"my_string_value","88.88","20170606",99999
+]"
+
+feature -- Testing
+
 	csv_in_system_tests
 			-- `CSV_tests'
 		local
