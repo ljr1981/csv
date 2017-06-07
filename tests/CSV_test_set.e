@@ -23,18 +23,33 @@ inherit
 
 feature -- Test routines
 
+	csv_split_test
+		local
+			l_test: CSV_TEST_OBJECT
+			l_list: ARRAY [TUPLE]
+		do
+			create l_test
+			l_list := l_test.csv_split (array_string)
+			assert_integers_equal ("array_string", 1, l_list.count)
+			l_list := l_test.csv_split (object_one)
+			assert_integers_equal ("object_one", 10, l_list.count)
+
+			create l_test.make_from_csv_line (object_one)
+			assert_strings_equal ("my_string_value", "my_string_value", l_test.my_string)
+		end
+
 	csv_object_representation_tests
 		local
 			l_object: CSV_TEST_OBJECT
 		do
-			create l_object
+			create l_object.make_from_csv_line ("")
 			assert_strings_equal ("object_one", object_one, l_object.representation_from_current (l_object))
 		end
 
 feature {NONE} -- Support
 
 	object_one: STRING = "[
-"my_string_value","88.88","20170606",99999
+"my_string_value","88.88","20170606","20170606-10:15:30",["mo","curly","shemp"],["mo","curly","shemp"],["Blah",10,"Q"],[false,20,3,10],"10:30:45",99999
 ]"
 
 feature -- Testing

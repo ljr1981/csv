@@ -220,7 +220,7 @@ feature {CSV_SERIALIZABLE} -- Implementation: Unkeyed Conversions
 	eiffel_time_to_csv_string (a_key: STRING; a_time: TIME): CSV_STRING
 			-- Convert `a_time' to CSV_STRING with `a_key'
 		do
-			create Result.make_csv_from_string_32 (a_time.hour.out + "/" + a_time.minute.out + "/" + a_time.second.out)
+			create Result.make_csv_from_string_32 (a_time.hour.out + ":" + a_time.minute.out + ":" + a_time.second.out)
 		end
 
 	eiffel_date_time_to_csv_string (a_key: STRING; a_date_time: DATE_TIME): CSV_STRING

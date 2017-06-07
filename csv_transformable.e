@@ -19,12 +19,6 @@ feature {NONE} -- Implementation: Access
 
 feature {NONE} -- Implementation
 
-	reflector: INTERNAL
-			-- ??
-		attribute
-			create Result
-		end
-
 	has_all_features (a_object: ANY; a_array: like convertible_features): BOOLEAN
 			-- Does `convertible_features' reflect features of Current (`a_object')?
 		local

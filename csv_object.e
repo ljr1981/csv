@@ -25,18 +25,14 @@ feature
 			-- <Precursor>
 		do
 			create Result.make (2)
---			Result.append_character ('{')
 			across
 				items as ic
 			loop
 				if Result.count > 1 then
 					Result.append_character (',')
 				end
---				Result.append (ic.key.representation)
---				Result.append_character (':')
 				Result.append (ic.item.representation)
 			end
---			Result.append_character ('}')
 		end
 
 
@@ -60,6 +56,18 @@ feature {NONE} -- Implementation
 			-- Value container
 		attribute
 			create Result.make (0)
+		end
+
+feature -- Access
+
+	item_attached (a_key: CSV_STRING): CSV_VALUE
+		do
+			check attached item (a_key) as al_result then Result := al_result end
+		end
+
+	item (a_key: CSV_STRING): detachable CSV_VALUE
+		do
+			Result := items.at (a_key)
 		end
 
 feature -- Status report
