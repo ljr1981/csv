@@ -42,7 +42,7 @@ feature -- Test routines
 		local
 			l_object: CSV_TEST_OBJECT
 		do
-			create l_object.make_from_csv_line ("")
+			create l_object
 			assert_strings_equal ("object_one", object_one, l_object.representation_from_current (l_object))
 		end
 
