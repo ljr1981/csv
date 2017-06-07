@@ -23,6 +23,7 @@ feature {NONE} -- Initialization
 			default_create -- ERASE ME WHEN DONE!
 			my_string := "blah_to_overwrite"
 			my_string := csv_object_to_eiffel_string_attached ("my_string", a_line)
+			my_number := csv_object_to_eiffel_integer ("my_number", a_line)
 		end
 
 	default_create

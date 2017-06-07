@@ -10,7 +10,7 @@ feature {NONE} -- Initialization
 		deferred
 		end
 
-feature -- Operations
+feature -- Converters: STRING
 
 	csv_object_to_eiffel_string (a_key: STRING; a_csv_line: STRING): detachable STRING
 		do
@@ -22,21 +22,69 @@ feature -- Operations
 			Result := string_for_key_attached (a_key, csv_split (a_csv_line))
 		end
 
-feature {TEST_SET_BRIDGE} -- Implementation
+feature -- Converters: NUMBER (INTEGER, REAL, NATURAL, DECIMAL)
 
-	string_for_key_attached (a_key: STRING; a_list: ARRAY [TUPLE]): STRING
+	csv_object_to_eiffel_integer (a_key: STRING; a_csv_line: STRING): INTEGER
 		do
-			check attached string_for_key (a_key, a_list) as al_string then Result := al_string end
-		end
-
-	string_for_key (a_key: STRING; a_list: ARRAY [TUPLE]): detachable STRING
-		do
-			if attached tuple_for_key (a_key, a_list) as al_tuple and then attached {STRING} al_tuple [1] as al_string then
-				Result := al_string
-				Result.remove_head (1)
-				Result.remove_tail (1)
+			check is_integer:
+				attached {STRING} csv_object_to_eiffel_number (a_key, a_csv_line) as al_string
+					and then attached {INTEGER} al_string.to_integer as al_result
+			then
+				Result := al_result
 			end
 		end
+
+	csv_object_to_eiffel_decimal (a_key: STRING; a_csv_line: STRING): DECIMAL
+		do
+			check is_decimal:
+				attached {STRING} csv_object_to_eiffel_number (a_key, a_csv_line) as al_string
+			then
+				create {DECIMAL} Result.make_from_string (al_string)
+			end
+		end
+
+	csv_object_to_eiffel_real_32 (a_key: STRING; a_csv_line: STRING): REAL_32
+		do
+			check is_real_32:
+				attached {STRING} csv_object_to_eiffel_number (a_key, a_csv_line) as al_string
+					and then attached {REAL} al_string.to_real_32 as al_result
+			then
+				Result := al_result
+			end
+		end
+
+	csv_object_to_eiffel_real_64 (a_key: STRING; a_csv_line: STRING): REAL_64
+		do
+			check is_real_64:
+				attached {STRING} csv_object_to_eiffel_number (a_key, a_csv_line) as al_string
+					and then attached {REAL_64} al_string.to_real_64 as al_result
+			then
+				Result := al_result
+			end
+		end
+
+	csv_object_to_eiffel_number (a_key: STRING; a_csv_line: STRING): STRING
+		do
+			check is_string:
+				attached {TUPLE [STRING]} tuple_for_key_attached (a_key, csv_split (a_csv_line)) as al_tuple_string
+					and then attached {STRING} al_tuple_string [1] as al_payload
+			then
+				Result := al_payload
+				Result.remove_head (1)
+				Result.remove_tail (1)
+				check is_numeric: Result.is_integer or Result.is_real or Result.is_natural end
+			end
+		end
+
+feature -- Converters: BOOLEAN
+
+feature -- Converters: DATE
+
+feature -- Converters: ARRAY
+
+feature -- Converters: NULL
+
+feature {TEST_SET_BRIDGE} -- Implementation: CORE
 
 	tuple_for_key_attached (a_key: STRING; a_list: ARRAY [TUPLE]): TUPLE
 		do
@@ -53,6 +101,24 @@ feature {TEST_SET_BRIDGE} -- Implementation
 				Result := a_list [i]
 			end
 		end
+
+feature {TEST_SET_BRIDGE} -- Implementation: STRING
+
+	string_for_key_attached (a_key: STRING; a_list: ARRAY [TUPLE]): STRING
+		do
+			check attached string_for_key (a_key, a_list) as al_string then Result := al_string end
+		end
+
+	string_for_key (a_key: STRING; a_list: ARRAY [TUPLE]): detachable STRING
+		do
+			if attached tuple_for_key (a_key, a_list) as al_tuple and then attached {STRING} al_tuple [1] as al_string then
+				Result := al_string
+				Result.remove_head (1)
+				Result.remove_tail (1)
+			end
+		end
+
+feature {TEST_SET_BRIDGE} -- Implementation
 
 	convertible_feature_number (a_key: STRING): INTEGER
 		do

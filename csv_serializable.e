@@ -26,6 +26,7 @@ feature {CSV_SERIALIZABLE} -- Implementation: Unkeyed Conversions
 			i, j: INTEGER
 			l_convertible_features: ARRAYED_LIST [STRING]
 			l_hash: HASH_TABLE [BOOLEAN, STRING]
+			l_result_hash: HASH_TABLE [detachable CSV_VALUE, STRING]
 			l_reflector: INTERNAL
 			l_key: STRING
 			l_field: detachable ANY
@@ -39,12 +40,18 @@ feature {CSV_SERIALIZABLE} -- Implementation: Unkeyed Conversions
 			create l_hash.make (0)
 			l_hash.compare_objects
 
+				-- Load up our convertible features in order!
 			from i := 1
 			until i > l_convertible_features.count
 			loop
 				l_hash.force (False, l_convertible_features.i_th (i))
 				i := i + 1
 			end
+
+				-- Create the result hash with enough room ...
+			create l_result_hash.make (l_convertible_features.count)
+
+				-- Load up the result in whatever order the features are in the object
 			from j := 1
 			until j > l_reflector.field_count (a_object)
 			loop
@@ -56,13 +63,19 @@ feature {CSV_SERIALIZABLE} -- Implementation: Unkeyed Conversions
 					create l_csv_key.make_from_string (l_key)
 					l_csv_value := Void
 					l_is_void := False
---					if is_not_persisting_long_strings and then attached {READABLE_STRING_GENERAL} l_field as al_string and then al_string.count > long_string_character_count then
---						Result.put (create {CSV_STRING}.make_csv_from_string_32 (long_string_tag), l_key)
---					else
-						Result.put (eiffel_to_csv (l_field, l_key), l_key)
---					end
+					l_result_hash.put (eiffel_to_csv (l_field, l_key), l_key)
 				end
 				j := j + 1
+			end
+
+				-- Go over the convertibles in order, finding their result hash items and putting them
+				--	into the Result in the order of the convertibles ...
+			across
+				l_convertible_features as ic_features
+			loop
+				check attached l_result_hash.item (ic_features.item) as al_item then
+					Result.put (al_item, ic_features.item)
+				end
 			end
 		end
 

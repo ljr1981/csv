@@ -49,7 +49,7 @@ feature -- Test routines
 feature {NONE} -- Support
 
 	object_one: STRING = "[
-"my_string_value","88.88","20170606","20170606-10:15:30",["mo","curly","shemp"],["mo","curly","shemp"],["Blah",10,"Q"],[false,20,3,10],"10:30:45",99999
+"my_string_value",99999,"88.88","20170606","20170606-10:15:30","10:30:45",["mo","curly","shemp"],["mo","curly","shemp"],["Blah",10,"Q"],[false,20,3,10]
 ]"
 
 feature -- Testing
