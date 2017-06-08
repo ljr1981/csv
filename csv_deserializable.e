@@ -346,7 +346,6 @@ feature {TEST_SET_BRIDGE} -- Implementation
 					l_is_iterating_down := True								-- From level #1 .. #n, we are always iterating down
 				when ']' then											-- ']' signals end of item, sub-item, array or tuple
 					l_level := l_level - 1									-- Each subsequence ']' signals another level back up
-					check not (l_item.count = 1) and then ( l_item [1] = '"') end
 					if l_level = 0 and l_is_iterating_down then				-- When we return to level 0 + iterating, then ...
 						l_item := strip_head_tail_double_quotes (l_item)
 						l_result.force ([csv_split (l_item)])				-- Take the string we've built and make a sublevel TUPLE item
