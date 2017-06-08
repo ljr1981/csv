@@ -36,6 +36,47 @@ feature -- Test routines
 
 			create l_test.make_from_csv_line (object_one)
 			assert_strings_equal ("my_string_value", "my_string_value", l_test.my_string)
+			assert_strings_equal ("my_number_value", "999", l_test.my_number.out)
+			assert_strings_equal ("my_decimal_value", "88.88", l_test.my_decimal.to_engineering_string)
+			assert_strings_equal ("my_date_value", "06/06/2017", l_test.my_date.out)
+			assert_strings_equal ("my_datetime_value", "06/06/2017 10:15:30.000 AM", l_test.my_datetime.out)
+			assert_integers_equal ("my_array_count", 3, l_test.my_array.count)
+			assert_integers_equal ("my_arrayed_list_count", 3, l_test.my_arrayed_list.count)
+			check attached l_test.my_tuple [1] as al_item then
+				assert_strings_equal ("my_tuple_value_1", "Blah", al_item.out)
+			end
+			check has_int: attached l_test.my_tuple [2] as al_item then
+				assert_strings_equal ("my_tuple_value_2", "10", al_item.out)
+				check is_int: attached {INTEGER} al_item as al_integer then
+					assert_integers_equal ("my_tuple_value_2_int", 10, al_integer)
+				end
+			end
+			check has_q: attached l_test.my_tuple [3] as al_item then
+				assert_strings_equal ("my_tuple_value_3", "Q", al_item.out)
+			end
+			assert_strings_equal ("mixed", "20 3/10", l_test.my_mixed.out)
+
+			create l_test.make_from_csv_line (object_two)
+			assert_strings_equal ("my_string_value_2", "my_other_string", l_test.my_string)
+			assert_strings_equal ("my_number_value_2", "8888", l_test.my_number.out)
+			assert_strings_equal ("my_decimal_value_2", "77.77", l_test.my_decimal.to_engineering_string)
+			assert_strings_equal ("my_date_value_2", "01/01/2017", l_test.my_date.out)
+			assert_strings_equal ("my_datetime_value_2", "01/01/2017 10:15:30.000 AM", l_test.my_datetime.out)
+			assert_integers_equal ("my_array_count_2", 3, l_test.my_array.count)
+			assert_integers_equal ("my_arrayed_list_count_2", 3, l_test.my_arrayed_list.count)
+			check attached l_test.my_tuple [1] as al_item then
+				assert_strings_equal ("my_tuple_value_1_2", "Blah2", al_item.out)
+			end
+			check has_int: attached l_test.my_tuple [2] as al_item then
+				assert_strings_equal ("my_tuple_value_2_2", "20", al_item.out)
+				check is_int: attached {INTEGER} al_item as al_integer then
+					assert_integers_equal ("my_tuple_value_2_int_2", 20, al_integer)
+				end
+			end
+			check has_q: attached l_test.my_tuple [3] as al_item then
+				assert_strings_equal ("my_tuple_value_3_2", "R", al_item.out)
+			end
+			assert_strings_equal ("mixed_2", "15 1/5", l_test.my_mixed.out)
 		end
 
 	csv_object_representation_tests
@@ -50,6 +91,10 @@ feature {NONE} -- Support
 
 	object_one: STRING = "[
 "my_string_value",99999,"88.88","20170606","20170606-10:15:30","10:30:45",["mo","curly","shemp"],["mo","curly","shemp"],["Blah",10,"Q"],[false,20,3,10]
+]"
+
+	object_two: STRING = "[
+"my_other_string",888888,"77.77","20170101","20170101-10:15:30","10:31:46",["bugs","daffy","porky"],["foghorn","wiley","roadrunner"],["Blah2",20,"R"],[true,15,1,5]
 ]"
 
 feature -- Testing

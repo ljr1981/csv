@@ -12,61 +12,61 @@ feature {NONE} -- Initialization
 
 feature -- Converters: STRING
 
-	csv_object_to_eiffel_string (a_key: STRING; a_csv_line: STRING): detachable STRING
+	csv_object_to_eiffel_string (a_key: STRING; a_list: ARRAY [TUPLE]): detachable STRING
 		do
-			Result := string_for_key (a_key, csv_split (a_csv_line))
+			Result := string_for_key (a_key, a_list)
 		end
 
-	csv_object_to_eiffel_string_attached (a_key: STRING; a_csv_line: STRING): STRING
+	csv_object_to_eiffel_string_attached (a_key: STRING; a_list: ARRAY [TUPLE]): STRING
 		do
-			Result := string_for_key_attached (a_key, csv_split (a_csv_line))
+			Result := string_for_key_attached (a_key, a_list)
 		end
 
 feature -- Converters: NUMBER (INTEGER, REAL, NATURAL, DECIMAL)
 
-	csv_object_to_eiffel_integer (a_key: STRING; a_csv_line: STRING): INTEGER
+	csv_object_to_eiffel_integer (a_key: STRING; a_list: ARRAY [TUPLE]): INTEGER
 		do
 			check is_integer:
-				attached {STRING} csv_object_to_eiffel_number (a_key, a_csv_line) as al_string
+				attached {STRING} csv_object_to_eiffel_number (a_key, a_list) as al_string
 					and then attached {INTEGER} al_string.to_integer as al_result
 			then
 				Result := al_result
 			end
 		end
 
-	csv_object_to_eiffel_decimal (a_key: STRING; a_csv_line: STRING): DECIMAL
+	csv_object_to_eiffel_decimal (a_key: STRING; a_list: ARRAY [TUPLE]): DECIMAL
 		do
 			check is_decimal:
-				attached {STRING} csv_object_to_eiffel_number (a_key, a_csv_line) as al_string
+				attached {STRING} csv_object_to_eiffel_number (a_key, a_list) as al_string
 			then
 				create {DECIMAL} Result.make_from_string (al_string)
 			end
 		end
 
-	csv_object_to_eiffel_real_32 (a_key: STRING; a_csv_line: STRING): REAL_32
+	csv_object_to_eiffel_real_32 (a_key: STRING; a_list: ARRAY [TUPLE]): REAL_32
 		do
 			check is_real_32:
-				attached {STRING} csv_object_to_eiffel_number (a_key, a_csv_line) as al_string
+				attached {STRING} csv_object_to_eiffel_number (a_key, a_list) as al_string
 					and then attached {REAL} al_string.to_real_32 as al_result
 			then
 				Result := al_result
 			end
 		end
 
-	csv_object_to_eiffel_real_64 (a_key: STRING; a_csv_line: STRING): REAL_64
+	csv_object_to_eiffel_real_64 (a_key: STRING; a_list: ARRAY [TUPLE]): REAL_64
 		do
 			check is_real_64:
-				attached {STRING} csv_object_to_eiffel_number (a_key, a_csv_line) as al_string
+				attached {STRING} csv_object_to_eiffel_number (a_key, a_list) as al_string
 					and then attached {REAL_64} al_string.to_real_64 as al_result
 			then
 				Result := al_result
 			end
 		end
 
-	csv_object_to_eiffel_number (a_key: STRING; a_csv_line: STRING): STRING
+	csv_object_to_eiffel_number (a_key: STRING; a_list: ARRAY [TUPLE]): STRING
 		do
 			check is_string:
-				attached {TUPLE [STRING]} tuple_for_key_attached (a_key, csv_split (a_csv_line)) as al_tuple_string
+				attached {TUPLE [STRING]} tuple_for_key_attached (a_key, a_list) as al_tuple_string
 					and then attached {STRING} al_tuple_string [1] as al_payload
 			then
 				Result := al_payload
@@ -76,9 +76,203 @@ feature -- Converters: NUMBER (INTEGER, REAL, NATURAL, DECIMAL)
 			end
 		end
 
-feature -- Converters: BOOLEAN
-
 feature -- Converters: DATE
+
+	csv_object_to_eiffel_date (a_key: STRING; a_list: ARRAY [TUPLE]): DATE
+		do
+			check is_string_date:
+				attached {TUPLE [STRING]} tuple_for_key_attached (a_key, a_list) as al_tuple_string
+					and then attached {STRING} al_tuple_string [1] as al_payload
+			then
+				if al_payload [1] = '"' then -- "20170606"
+					create Result.make (al_payload.substring (2, 5).to_integer,
+										al_payload.substring (6, 7).to_integer,
+										al_payload.substring (8, 9).to_integer)
+				else 						-- 20170606
+					create Result.make (al_payload.substring (1, 4).to_integer,
+										al_payload.substring (5, 6).to_integer,
+										al_payload.substring (7, 8).to_integer)
+				end
+			end
+		end
+
+	csv_object_to_eiffel_datetime (a_key: STRING; a_list: ARRAY [TUPLE]): DATE_TIME
+		do
+			check is_string_date:
+				attached {TUPLE [STRING]} tuple_for_key_attached (a_key, a_list) as al_tuple_string
+					and then attached {STRING} al_tuple_string [1] as al_payload
+			then
+				if al_payload [1] = '"' then -- "20170606-10:15:30"
+					create Result.make (al_payload.substring (2, 5).to_integer,
+										al_payload.substring (6, 7).to_integer,
+										al_payload.substring (8, 9).to_integer,
+										al_payload.substring (11, 12).to_integer,
+										al_payload.substring (14, 15).to_integer,
+										al_payload.substring (17, 18).to_integer)
+				else 						-- 20170606-10:15:30
+					create Result.make (al_payload.substring (1, 4).to_integer,
+										al_payload.substring (5, 6).to_integer,
+										al_payload.substring (7, 8).to_integer,
+										al_payload.substring (10, 11).to_integer,
+										al_payload.substring (13, 14).to_integer,
+										al_payload.substring (16, 17).to_integer)
+				end
+			end
+		end
+
+	csv_object_to_eiffel_time (a_key: STRING; a_list: ARRAY [TUPLE]): TIME
+		do
+			check is_string_date:
+				attached {TUPLE [STRING]} tuple_for_key (a_key, a_list) as al_tuple_string
+					and then attached {STRING} al_tuple_string [1] as al_payload
+			then
+				if al_payload [1] = '"' then -- "20170606-10:15:30"
+					create Result.make (al_payload.substring (2, 3).to_integer,
+										al_payload.substring (5, 6).to_integer,
+										al_payload.substring (8, 9).to_integer)
+				else 						-- 20170606-10:15:30
+					create Result.make (al_payload.substring (1, 2).to_integer,
+										al_payload.substring (4, 5).to_integer,
+										al_payload.substring (7, 8).to_integer)
+				end
+			end
+		end
+
+	csv_object_to_eiffel_array (a_key: STRING; a_list: ARRAY [TUPLE]): ARRAY [detachable ANY]
+		local
+			l_tuple: TUPLE
+			l_arrayed_list: ARRAYED_LIST [detachable ANY]
+		do
+			l_tuple := csv_object_to_eiffel_tuple (a_key, a_list)
+			create l_arrayed_list.make (l_tuple.count)
+			across
+				l_tuple as ic
+			loop
+				l_arrayed_list.force (ic.item)
+			end
+			Result := l_arrayed_list.to_array
+		end
+
+	csv_object_to_eiffel_array_attached (a_key: STRING; a_list: ARRAY [TUPLE]): ARRAY [ANY]
+		local
+			l_tuple: TUPLE
+			l_arrayed_list: ARRAYED_LIST [ANY]
+		do
+			l_tuple := csv_object_to_eiffel_tuple (a_key, a_list)
+			create l_arrayed_list.make (l_tuple.count)
+			across
+				l_tuple as ic
+			loop
+				if attached ic.item as al_item then
+					l_arrayed_list.force (al_item)
+				end
+			end
+			Result := l_arrayed_list.to_array
+		end
+
+	csv_object_to_eiffel_arrayed_list (a_key: STRING; a_list: ARRAY [TUPLE]): ARRAYED_LIST [detachable ANY]
+		local
+			l_tuple: TUPLE
+			l_arrayed_list: ARRAYED_LIST [detachable ANY]
+		do
+			l_tuple := csv_object_to_eiffel_tuple (a_key, a_list)
+			create Result.make (l_tuple.count)
+			across
+				l_tuple as ic
+			loop
+				Result.force (ic.item)
+			end
+		end
+
+	csv_object_to_eiffel_arrayed_list_attached (a_key: STRING; a_list: ARRAY [TUPLE]): ARRAYED_LIST [ANY]
+		local
+			l_tuple: TUPLE
+			l_arrayed_list: ARRAYED_LIST [ANY]
+		do
+			l_tuple := csv_object_to_eiffel_tuple (a_key, a_list)
+			create Result.make (l_tuple.count)
+			across
+				l_tuple as ic
+			loop
+				if attached ic.item as al_item then
+					Result.force (al_item)
+				end
+			end
+		end
+
+	csv_object_to_eiffel_mixed (a_key: STRING; a_list: ARRAY [TUPLE]): FW_MIXED_NUMBER
+		local
+			l_tuple: TUPLE
+			l_args: TUPLE [is_negative: BOOLEAN; whole, num, denom: INTEGER]
+		do
+			l_tuple := csv_object_to_eiffel_tuple (a_key, a_list)
+			check has_four: l_tuple.count = 4 end
+			check
+				attached {BOOLEAN} l_tuple [1] as al_is_neg
+					and then attached {INTEGER} l_tuple [2] as al_whole_int
+					and then attached {INTEGER} l_tuple [3] as al_num_int
+					and then attached {INTEGER} l_tuple [4] as al_denom_int
+			then
+				create Result.make (al_is_neg, al_whole_int.to_natural_64, al_num_int.to_natural_32, al_denom_int.to_natural_32)
+			end
+		end
+
+	csv_object_to_eiffel_tuple (a_key: STRING; a_list: ARRAY [TUPLE]): TUPLE
+		local
+			l_result,
+			l_tuple: TUPLE
+			l_string: STRING
+		do
+			create Result
+			create l_result
+			if
+				attached {TUPLE [ARRAY [TUPLE]]} tuple_for_key (a_key, a_list) as al_tuple_array_tuple
+					and then attached {ARRAY [TUPLE]} al_tuple_array_tuple [1] as al_array_tuple
+			then
+				across
+					al_array_tuple as ic
+				loop
+					check
+						has: attached l_result
+							and then attached {TUPLE} ic.item as al_tuple
+					then
+						if
+							attached l_result
+								and then not al_tuple.is_empty
+								and then attached {STRING} al_tuple [1] as al_string
+						then
+							l_string := al_string.twin
+							if not l_string.is_empty and then l_string [1] = '"' then
+								l_string.remove_head (1)
+								if not l_string.is_empty and then l_string [l_string.count] = '"' then
+									l_string.remove_tail (1)
+								end
+								l_result := l_result + [l_string]
+							elseif l_string.is_boolean then
+								l_result := l_result + [l_string.to_boolean]
+							elseif l_string.is_integer then
+								l_result := l_result + [l_string.to_integer]
+							elseif l_string.is_natural then
+								l_result := l_result + [l_string.to_natural]
+							elseif l_string.is_real then
+								l_result := l_result + [l_string.to_real]
+							else
+								l_result := l_result + [l_string]
+							end
+						else
+							l_result := l_result + al_tuple
+						end
+					end
+				end
+			end
+			check has_tuple_result:
+				attached l_result
+			then
+				Result := l_result
+			end
+		end
+
+feature -- Converters: BOOLEAN
 
 feature -- Converters: ARRAY
 
@@ -93,7 +287,6 @@ feature {TEST_SET_BRIDGE} -- Implementation: CORE
 
 	tuple_for_key (a_key: STRING; a_list: ARRAY [TUPLE]): detachable TUPLE
 		local
-			l_list: ARRAY [TUPLE]
 			i: INTEGER
 		do
 			i := convertible_feature_number (a_key)
