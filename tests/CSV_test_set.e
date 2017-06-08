@@ -23,6 +23,58 @@ inherit
 
 feature -- Test routines
 
+	csv_strip_test
+		local
+			l_test: TEST_TASK_OBJECT
+			l_string: STRING
+		do
+			create l_test
+			l_string := l_test.strip_head_tail_double_quotes ("%"BLAH%"")
+			assert_strings_equal ("no_quotes", "BLAH", l_string)
+			l_string := l_test.strip_head_tail_double_quotes ("%"%"")
+			assert_strings_equal ("no_quotes", "", l_string)
+			l_string := l_test.strip_head_tail_double_quotes ("%"BL%"AH%"")
+			assert_strings_equal ("no_quotes", "BL%"AH", l_string)
+		end
+
+	csv_split_example_task_test
+		local
+			l_task: TEST_TASK_OBJECT
+			l_list: ARRAY [TUPLE]
+			l_item: STRING
+		do
+			create l_task
+			l_list := l_task.csv_split (task_template_line_example)
+--						"project_key",
+			check item_1_string: attached {STRING} l_list [1].item (1) as al_item then
+				assert_strings_equal ("item_1", "", al_item)
+			end
+--						"key",
+			check item_2_string: attached {STRING} l_list [2].item (1) as al_item then
+				assert_strings_equal ("item_2", "TT1", al_item)
+			end
+--						"name",
+			check item_3_string: attached {STRING} l_list [3].item (1) as al_item then
+				assert_strings_equal ("item_3", "TASK_NAME1", al_item)
+			end
+--						"predecessors",4
+--						"labor_type",5
+			check item_5_string: attached {STRING} l_list [5].item (1) as al_item then
+				assert_strings_equal ("item_5", "LABOR_TYPE1", al_item)
+			end
+--						"material_type",
+--						"uom",
+--						"est_qty",
+--						"est_qty_per_day",
+--						"est_qty_per_hour",
+--						"act_quantities",
+--						"cost_per_unit"
+		end
+
+	task_template_line_example: STRING = "[
+"","TT1","TASK_NAME1",[""],"LABOR_TYPE1","MAT_TYPE1","EACH","10.00","20.00","30.00","","40.00"
+]"
+
 	csv_split_example_test
 		local
 			l_test: TEST_RESOURCE_OBJECT
@@ -43,43 +95,43 @@ feature -- Test routines
 			assert_integers_equal ("has_10", 10, l_list.count)
 --						"project_key",
 			check item_1_string: attached {STRING} l_list [1].item (1) as al_item then
-				assert_strings_equal ("item_1", "%"%"", al_item)
+				assert_strings_equal ("item_1", "", al_item)
 			end
 --						"key",
 			check item_2_string: attached {STRING} l_list [2].item (1) as al_item then
-				assert_strings_equal ("item_1", "%"RT1%"", al_item)
+				assert_strings_equal ("item_1", "RT1", al_item)
 			end
 --						"name",
 			check item_3_string: attached {STRING} l_list [3].item (1) as al_item then
-				assert_strings_equal ("item_1", "%"RES1%"", al_item)
+				assert_strings_equal ("item_1", "RES1", al_item)
 			end
 --						"types",
 			check item_4_string: attached {STRING} l_list [4].item (1) as al_item then
-				assert_strings_equal ("item_1", "%"%"", al_item)
+				assert_strings_equal ("item_1", "", al_item)
 			end
 --						"spec",
 			check item_5_string: attached {STRING} l_list [5].item (1) as al_item then
-				assert_strings_equal ("item_1", "%"<><JAN-DEC><MON-FRI><0800-1700><>%"", al_item)
+				assert_strings_equal ("item_1", "<><JAN-DEC><MON-FRI><0800-1700><>", al_item)
 			end
 --						"cubic_feet",
 			check item_6_string: attached {STRING} l_list [6].item (1) as al_item then
-				assert_strings_equal ("item_1", "%"0%"", al_item)
+				assert_strings_equal ("item_1", "0", al_item)
 			end
 --						"cost_fixed",
 			check item_7_string: attached {STRING} l_list [7].item (1) as al_item then
-				assert_strings_equal ("item_1", "%"10.00%"", al_item)
+				assert_strings_equal ("item_1", "10.00", al_item)
 			end
 --						"cost_per_hour",
 			check item_8_string: attached {STRING} l_list [8].item (1) as al_item then
-				assert_strings_equal ("item_1", "%"20.00%"", al_item)
+				assert_strings_equal ("item_1", "20.00", al_item)
 			end
 --						"cost_to_purchase",
 			check item_9_string: attached {STRING} l_list [9].item (1) as al_item then
-				assert_strings_equal ("item_1", "%"30.00%"", al_item)
+				assert_strings_equal ("item_1", "30.00", al_item)
 			end
 --						"uom"
 			check item_10_string: attached {STRING} l_list [10].item (1) as al_item then
-				assert_strings_equal ("item_1", "%"EACH%"", al_item)
+				assert_strings_equal ("item_1", "EACH", al_item)
 			end
 
 		end
@@ -101,7 +153,7 @@ feature -- Test routines
 
 			create l_test.make_from_csv_line (object_one)
 			assert_strings_equal ("my_string_value", "my_string_value", l_test.my_string)
-			assert_strings_equal ("my_number_value", "999", l_test.my_number.out)
+			assert_strings_equal ("my_number_value", "99999", l_test.my_number.out)
 			assert_strings_equal ("my_decimal_value", "88.88", l_test.my_decimal.to_engineering_string)
 			assert_strings_equal ("my_date_value", "06/06/2017", l_test.my_date.out)
 			assert_strings_equal ("my_datetime_value", "06/06/2017 10:15:30.000 AM", l_test.my_datetime.out)
@@ -123,7 +175,7 @@ feature -- Test routines
 
 			create l_test.make_from_csv_line (object_two)
 			assert_strings_equal ("my_string_value_2", "my_other_string", l_test.my_string)
-			assert_strings_equal ("my_number_value_2", "8888", l_test.my_number.out)
+			assert_strings_equal ("my_number_value_2", "888888", l_test.my_number.out)
 			assert_strings_equal ("my_decimal_value_2", "77.77", l_test.my_decimal.to_engineering_string)
 			assert_strings_equal ("my_date_value_2", "01/01/2017", l_test.my_date.out)
 			assert_strings_equal ("my_datetime_value_2", "01/01/2017 10:15:30.000 AM", l_test.my_datetime.out)
