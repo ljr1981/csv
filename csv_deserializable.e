@@ -327,11 +327,14 @@ feature {TEST_SET_BRIDGE} -- Implementation
 		end
 
 	csv_split (a_string: STRING): ARRAY [TUPLE]
+		require
+			balanced_square_brackets: a_string.occurrences ('[') = a_string.occurrences (']')
 		local
 			l_item: STRING
 			l_result: ARRAYED_LIST [TUPLE]
 			l_level: INTEGER
 			l_is_iterating_down: BOOLEAN
+			l_char: CHARACTER
 		do
 			across
 				a_string as ic
@@ -341,6 +344,7 @@ feature {TEST_SET_BRIDGE} -- Implementation
 				l_level := 0
 				l_is_iterating_down := False
 			loop
+				l_char := ic.item
 				inspect													-- each character in `a_string' ...
 					ic.item
 				when '[' then											-- '[' signals start of item, sub-item, array or tuple

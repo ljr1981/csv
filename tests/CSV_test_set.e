@@ -23,6 +23,71 @@ inherit
 
 feature -- Test routines
 
+	csv_split_example_test
+		local
+			l_test: TEST_RESOURCE_OBJECT
+			l_list: ARRAY [TUPLE]
+			l_item: STRING
+		do
+			create l_test
+			l_list := l_test.csv_split ("%"<><JAN-DEC><MON-FRI><0800-1700><>") -- This works ... it fails (below) in wider context!
+			-- l_list := l_test.csv_split ("%"%",%"RT1%",%"RES1%",,%"[<><JAN-DEC><MON-FRI><0800-1700><>]]%",%"0%",%"10.00%",%"20.00%",%"30.00%",%"EACH%"")
+				-- ERROR: The mistake is the doublt ]] in the text above.
+				-- BUG: The code is very brittle and fails without grace because of it.
+				-- SOLUTION(S):
+				--	(1) Put a require contract that scans to ensure the count of "[" matches the count of "]", but this
+				--		just moves the failure to the caller, but that might be good because the caller can be more robust!
+				-- SO: I have added the require, so where the above failed, removing the double "]]" now allows this code to work!
+			l_list := l_test.csv_split ("%"%",%"RT1%",%"RES1%",%"%",%"[<><JAN-DEC><MON-FRI><0800-1700><>]%",%"0%",%"10.00%",%"20.00%",%"30.00%",%"EACH%"")
+			l_list := l_test.csv_split (resource_line_example)
+			assert_integers_equal ("has_10", 10, l_list.count)
+--						"project_key",
+			check item_1_string: attached {STRING} l_list [1].item (1) as al_item then
+				assert_strings_equal ("item_1", "%"%"", al_item)
+			end
+--						"key",
+			check item_2_string: attached {STRING} l_list [2].item (1) as al_item then
+				assert_strings_equal ("item_1", "%"RT1%"", al_item)
+			end
+--						"name",
+			check item_3_string: attached {STRING} l_list [3].item (1) as al_item then
+				assert_strings_equal ("item_1", "%"RES1%"", al_item)
+			end
+--						"types",
+			check item_4_string: attached {STRING} l_list [4].item (1) as al_item then
+				assert_strings_equal ("item_1", "%"%"", al_item)
+			end
+--						"spec",
+			check item_5_string: attached {STRING} l_list [5].item (1) as al_item then
+				assert_strings_equal ("item_1", "%"<><JAN-DEC><MON-FRI><0800-1700><>%"", al_item)
+			end
+--						"cubic_feet",
+			check item_6_string: attached {STRING} l_list [6].item (1) as al_item then
+				assert_strings_equal ("item_1", "%"0%"", al_item)
+			end
+--						"cost_fixed",
+			check item_7_string: attached {STRING} l_list [7].item (1) as al_item then
+				assert_strings_equal ("item_1", "%"10.00%"", al_item)
+			end
+--						"cost_per_hour",
+			check item_8_string: attached {STRING} l_list [8].item (1) as al_item then
+				assert_strings_equal ("item_1", "%"20.00%"", al_item)
+			end
+--						"cost_to_purchase",
+			check item_9_string: attached {STRING} l_list [9].item (1) as al_item then
+				assert_strings_equal ("item_1", "%"30.00%"", al_item)
+			end
+--						"uom"
+			check item_10_string: attached {STRING} l_list [10].item (1) as al_item then
+				assert_strings_equal ("item_1", "%"EACH%"", al_item)
+			end
+
+		end
+
+	resource_line_example: STRING = "[
+"","RT1","RES1","","<><JAN-DEC><MON-FRI><0800-1700><>","0","10.00","20.00","30.00","EACH"
+]"
+
 	csv_split_test
 		local
 			l_test: CSV_TEST_OBJECT
