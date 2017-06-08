@@ -70,8 +70,6 @@ feature -- Converters: NUMBER (INTEGER, REAL, NATURAL, DECIMAL)
 					and then attached {STRING} al_tuple_string [1] as al_payload
 			then
 				Result := al_payload
---				Result.remove_head (1)
---				Result.remove_tail (1)
 				check is_numeric: Result.is_integer or Result.is_real or Result.is_natural end
 			end
 		end
@@ -266,12 +264,6 @@ feature -- Converters: DATE
 			end
 		end
 
-feature -- Converters: BOOLEAN
-
-feature -- Converters: ARRAY
-
-feature -- Converters: NULL
-
 feature {TEST_SET_BRIDGE} -- Implementation: CORE
 
 	tuple_for_key_attached (a_key: STRING; a_list: ARRAY [TUPLE]): TUPLE
@@ -300,8 +292,6 @@ feature {TEST_SET_BRIDGE} -- Implementation: STRING
 		do
 			if attached tuple_for_key (a_key, a_list) as al_tuple and then attached {STRING} al_tuple [1] as al_string then
 				Result := al_string
---				Result.remove_head (1)
---				Result.remove_tail (1)
 			end
 		end
 
