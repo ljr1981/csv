@@ -10,6 +10,20 @@ feature {NONE} -- Initialization
 		deferred
 		end
 
+feature -- Converters: BOOLEAN
+
+	csv_object_to_boolean (a_attribute_name: STRING; a_list: ARRAY [TUPLE]): BOOLEAN
+			-- Deserialize actual BOOLEAN value for `a_attribute_name' from `a_object'.
+		require
+			non_empty_attribute_name: not a_attribute_name.is_empty
+		do
+			Result := attached tuple_for_key (a_attribute_name, a_list) as al_tuple
+					and then attached {STRING_8} al_tuple [1] as al_string
+					and then al_string.same_string (csv_true)
+		end
+
+	csv_true: STRING = "true"
+
 feature -- Converters: STRING
 
 	csv_object_to_eiffel_string (a_key: STRING; a_list: ARRAY [TUPLE]): detachable STRING
