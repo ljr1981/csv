@@ -14,7 +14,7 @@ feature -- Output
 feature -- Access
 
 	representation_from_current (a_current: ANY): STRING
-			-- JSON representation of Current (`a_current').
+			-- CSV representation of Current (`a_current').
 		do
 			Result := eiffel_object_to_csv_object (a_current).representation
 		end
