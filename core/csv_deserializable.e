@@ -364,6 +364,7 @@ feature {TEST_SET_BRIDGE} -- Implementation
 						l_item.append_character (ic.item)						-- So we save them in our string so we can pass them down ...
 					elseif l_level = 0 and l_is_iterating_down then			-- If we were iterating down, then we can reset that flag
 						l_is_iterating_down := False
+						create l_item.make_empty
 					else
 						check something_is_wrong: False end					-- Getting here ought to be impossible
 					end
@@ -389,6 +390,8 @@ feature {TEST_SET_BRIDGE} -- Implementation
 			elseif not Result.is_empty and Result [Result.count] = '"' then
 				Result.remove_tail (1)
 			end
+		ensure
+			no_head_tail: not Result.is_empty implies (Result [1] /= '"' and Result [Result.count]  /= '"')
 		end
 
 end

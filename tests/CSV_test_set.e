@@ -140,6 +140,19 @@ feature -- Test routines
 "","RT1","RES1","","<><JAN-DEC><MON-FRI><0800-1700><>","0","10.00","20.00","30.00","EACH"
 ]"
 
+	csv_split_test_2
+		local
+			l_test: CSV_TEST_OBJECT
+			l_list: ARRAY [TUPLE]
+		do
+			create l_test
+			l_list := l_test.csv_split (csv_split_test_2_string)
+		end
+
+	csv_split_test_2_string: STRING = "[
+,"FW01","FORMWORK TO FOOTINGS","[]",,,"EACH","0","12","12","[]","0","null","null","null","null","null"
+]"
+
 	csv_split_test
 		local
 			l_test: CSV_TEST_OBJECT
