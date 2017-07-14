@@ -153,6 +153,19 @@ feature -- Test routines
 ,"FW01","FORMWORK TO FOOTINGS","[]",,,"EACH","0","12","12","[]","0","null","null","null","null","null"
 ]"
 
+	csv_split_test_3
+		local
+			l_test: CSV_TEST_OBJECT
+			l_list: ARRAY [TUPLE]
+		do
+			create l_test
+			l_list := l_test.csv_split (csv_split_test_3_string)
+		end
+
+	csv_split_test_3_string: STRING = "[
+,"FW 59","DE-SHUTTERING MANHOLES, SQUARE - CIRCULAR (TIMBER)","[]",,,"EACH","0","40","40","[]","0","null","null","null","null","null"
+]"
+
 	csv_split_test
 		local
 			l_test: CSV_TEST_OBJECT
