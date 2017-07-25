@@ -331,7 +331,8 @@ feature {TEST_SET_BRIDGE} -- Implementation
 			l_item: STRING
 			l_result: ARRAYED_LIST [TUPLE]
 			l_level: INTEGER
-			l_is_iterating_down: BOOLEAN
+			l_is_iterating_down,
+			l_in_quotes: BOOLEAN
 			l_char: CHARACTER
 		do
 			across
@@ -341,10 +342,13 @@ feature {TEST_SET_BRIDGE} -- Implementation
 				create l_item.make_empty
 				l_level := 0
 				l_is_iterating_down := False
+				l_in_quotes := False									-- Presume starting at "out-quotes"
 			loop
 				l_char := ic.item
 				inspect													-- each character in `a_string' ...
 					ic.item
+				when '"' then
+					l_in_quotes := not l_in_quotes						-- Toggle our double-quote flag (in or out)
 				when '[' then											-- '[' signals start of item, sub-item, array or tuple
 					l_level := l_level + 1									-- Each subsequent '['  signals another level down
 					l_is_iterating_down := True								-- From level #1 .. #n, we are always iterating down
@@ -356,17 +360,21 @@ feature {TEST_SET_BRIDGE} -- Implementation
 						create l_item.make_empty							-- Empty the text of our `l_item' because we're done with it
 					end
 				when ',' then											-- ',' signals the end of the item
-					if l_level = 0 and not l_is_iterating_down then			-- If we were not iterating, then we save our TUPLE item
-						l_item := strip_head_tail_double_quotes (l_item)
-						l_result.force ([l_item])
-						create l_item.make_empty
-					elseif l_level > 0 and l_is_iterating_down then			-- These are our intermediate sub-item comma's
-						l_item.append_character (ic.item)						-- So we save them in our string so we can pass them down ...
-					elseif l_level = 0 and l_is_iterating_down then			-- If we were iterating down, then we can reset that flag
-						l_is_iterating_down := False
-						create l_item.make_empty
+					if not l_in_quotes then
+						if l_level = 0 and not l_is_iterating_down then			-- If we were not iterating, then we save our TUPLE item
+							l_item := strip_head_tail_double_quotes (l_item)
+							l_result.force ([l_item])
+							create l_item.make_empty
+						elseif l_level > 0 and l_is_iterating_down then			-- These are our intermediate sub-item comma's
+							l_item.append_character (ic.item)						-- So we save them in our string so we can pass them down ...
+						elseif l_level = 0 and l_is_iterating_down then			-- If we were iterating down, then we can reset that flag
+							l_is_iterating_down := False
+							create l_item.make_empty
+						else
+							check something_is_wrong: False end					-- Getting here ought to be impossible
+						end
 					else
-						check something_is_wrong: False end					-- Getting here ought to be impossible
+						l_item.append_character (ic.item)
 					end
 				else
 					l_item.append_character (ic.item)

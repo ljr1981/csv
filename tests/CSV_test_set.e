@@ -23,6 +23,24 @@ inherit
 
 feature -- Test routines
 
+	csv_split_resource_test
+		local
+			l_mock: TEST_RESOURCE_OBJECT
+			l_result: ARRAY [TUPLE]
+		do
+			create l_mock
+			l_result := l_mock.csv_split (resource_csv_string)
+			assert_integers_equal ("ten", 10, l_result.count)
+			if attached l_result.item (5) as al_tuple and then attached {STRING} al_tuple [1] as al_item then
+				assert_strings_equal ("a_b", "A,B", al_item)
+			end
+		end
+
+	resource_csv_string: STRING
+="[
+"P1","RES1","Uber Res 1",null,"A,B","10","10","10","10","EACH"
+]"
+
 	csv_strip_test
 		local
 			l_test: TEST_TASK_OBJECT
