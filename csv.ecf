@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-18-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-18-0 http://www.eiffel.com/developers/xml/configuration-1-18-0.xsd" name="csv" uuid="06BB039F-BF2C-12E6-D0F4-0000775B4ED0" readonly="false" library_target="csv">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-21-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-21-0 http://www.eiffel.com/developers/xml/configuration-1-21-0.xsd" name="csv" uuid="06BB039F-BF2C-12E6-D0F4-0000775B4ED0" readonly="false" library_target="csv">
 	<description>csv implementation</description>
 	<target name="csv">
 		<root all_classes="true"/>
-		<option warning="true" syntax="provisional" manifest_array_type="mismatch_warning">
+		<option warning="warning" syntax="provisional" manifest_array_type="mismatch_warning">
 			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
 		</option>
 		<setting name="console_application" value="true"/>
+		<setting name="total_order_on_reals" value="false"/>
+		<setting name="dead_code_removal" value="feature"/>
 		<capability>
 			<concurrency support="none" use="thread"/>
 			<void_safety support="transitional" use="transitional"/>
 		</capability>
 		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
-		<library name="decimal" location="iron:decimal:decimal\decimal.ecf"/>
-		<library name="framework" location="iron:framework:framework.ecf"/>
-		<library name="process" location="iron:process:process.ecf"/>
-		<library name="randomizer" location="iron:randomizer:randomizer.ecf"/>
-		<library name="test_extension" location="iron:test_extension:test_extension.ecf"/>
-		<library name="time" location="iron:time:time.ecf"/>
+		<library name="decimal" location="$ISE_LIBRARY\contrib\library\math\decimal\decimal\decimal.ecf"/>
+		<library name="framework" location="..\framework\framework.ecf"/>
+		<library name="process" location="$ISE_LIBRARY\library\process\process.ecf"/>
+		<library name="randomizer" location="..\randomizer\randomizer.ecf"/>
+		<library name="test_extension" location="..\test_extension\test_extension.ecf"/>
+		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
 		<cluster name="csv" location=".\" recursive="true">
 			<file_rule>
 				<exclude>/.git$</exclude>
@@ -41,6 +43,7 @@
 		<option profile="false">
 		</option>
 		<setting name="console_application" value="false"/>
+		<setting name="total_order_on_reals" value="false"/>
 		<library name="testing" location="$ISE_LIBRARY\library\testing\testing-safe.ecf"/>
 		<cluster name="tests" location=".\tests\" recursive="true"/>
 	</target>
